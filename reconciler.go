@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package reconcilers
+package reconciler
 
 import (
 	"context"
@@ -23,13 +23,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type (
-	Reconciler interface {
-		Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error)
-		SetNext(next Reconciler)
-		Next(ctx context.Context, obj client.Object) (ctrl.Result, error)
-	}
-)
+type Reconciler interface {
+	Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error)
+	Next(ctx context.Context, obj client.Object) (ctrl.Result, error)
+	setNext(next Reconciler)
+}
 
 func Chain(reconcilers ...Reconciler) Reconciler {
 	reconcilers = append(reconcilers, &finisher{})
@@ -37,7 +35,7 @@ func Chain(reconcilers ...Reconciler) Reconciler {
 	var last Reconciler
 	for i := len(reconcilers) - 1; i >= 0; i-- {
 		current := reconcilers[i]
-		current.SetNext(last)
+		current.setNext(last)
 		last = current
 	}
 	return last

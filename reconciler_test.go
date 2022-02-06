@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package reconcilers_test
+package reconciler_test
 
 import (
 	"context"
@@ -27,12 +27,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logr "sigs.k8s.io/controller-runtime/pkg/log"
 
-	"github.com/angelokurtis/reconcilers"
+	"github.com/angelokurtis/reconciler"
 )
 
 func TestOperations(t *testing.T) {
 	t.Run("should throw error when an operation fails", func(t *testing.T) {
-		r := reconcilers.Chain(
+		r := reconciler.Chain(
 			&withoutError{},
 			&withError{},
 			&withRequeueIn2min{},
@@ -43,7 +43,7 @@ func TestOperations(t *testing.T) {
 		}
 	})
 	t.Run("should requeue in 2m when an operation have this result", func(t *testing.T) {
-		r := reconcilers.Chain(
+		r := reconciler.Chain(
 			&withRequeueIn2min{},
 			&withoutError{},
 		)
@@ -53,7 +53,7 @@ func TestOperations(t *testing.T) {
 		}
 	})
 	t.Run("should requeue now when an operation have this result", func(t *testing.T) {
-		r := reconcilers.Chain(
+		r := reconciler.Chain(
 			&withRequeue{},
 			&withoutError{},
 		)
@@ -63,7 +63,7 @@ func TestOperations(t *testing.T) {
 		}
 	})
 	t.Run("should finish all operations when none requeue or fail", func(t *testing.T) {
-		r := reconcilers.Chain(
+		r := reconciler.Chain(
 			&withoutError{},
 			&withoutError{},
 		)
@@ -74,26 +74,26 @@ func TestOperations(t *testing.T) {
 	})
 }
 
-type withoutError struct{ reconcilers.Funcs }
+type withoutError struct{ reconciler.Funcs }
 
 func (w *withoutError) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	logr.FromContext(ctx).V(0).Info(fmt.Sprintf("%T", w))
 	return w.Next(ctx, obj)
 }
 
-type withError struct{ reconcilers.Funcs }
+type withError struct{ reconciler.Funcs }
 
 func (w *withError) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return w.RequeueOnErr(ctx, errors.New("reconcile with error"))
 }
 
-type withRequeue struct{ reconcilers.Funcs }
+type withRequeue struct{ reconciler.Funcs }
 
 func (w *withRequeue) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return w.Requeue(ctx)
 }
 
-type withRequeueIn2min struct{ reconcilers.Funcs }
+type withRequeueIn2min struct{ reconciler.Funcs }
 
 func (w *withRequeueIn2min) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return w.RequeueAfter(ctx, 2*time.Minute)

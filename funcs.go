@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package reconcilers
+package reconciler
 
 import (
 	"context"
@@ -26,9 +26,7 @@ import (
 
 type Funcs struct{ next Reconciler }
 
-func (f *Funcs) SetNext(next Reconciler) {
-	f.next = next
-}
+func (f *Funcs) setNext(next Reconciler) { f.next = next }
 
 func (f *Funcs) Next(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return f.next.Reconcile(ctx, obj)
