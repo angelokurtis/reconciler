@@ -1,2 +1,2 @@
-# reconcilers
+# reconciler
 A library to avoid overstuffed Reconcile functions of Kubernetes operators
