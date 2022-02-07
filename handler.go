@@ -23,18 +23,18 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Reconciler interface {
+type Handler interface {
 	Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error)
 	Next(ctx context.Context, obj client.Object) (ctrl.Result, error)
-	setNext(next Reconciler)
+	setNext(next Handler)
 }
 
-func Chain(reconcilers ...Reconciler) Reconciler {
-	reconcilers = append(reconcilers, &finisher{})
-	reconcilers = append([]Reconciler{&tracer{}}, reconcilers...)
-	var last Reconciler
-	for i := len(reconcilers) - 1; i >= 0; i-- {
-		current := reconcilers[i]
+func Chain(handlers ...Handler) Handler {
+	handlers = append(handlers, &finisher{})
+	handlers = append([]Handler{&tracer{}}, handlers...)
+	var last Handler
+	for i := len(handlers) - 1; i >= 0; i-- {
+		current := handlers[i]
 		current.setNext(last)
 		last = current
 	}

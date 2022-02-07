@@ -24,13 +24,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Funcs struct{ next Reconciler }
+type Funcs struct{ next Handler }
 
-func (f *Funcs) setNext(next Reconciler) { f.next = next }
+func (f *Funcs) setNext(next Handler) { f.next = next }
 
 func (f *Funcs) Next(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return f.next.Reconcile(ctx, obj)
 }
+
 func (f *Funcs) Finish(ctx context.Context) (ctrl.Result, error) {
 	return ctrl.Result{}, nil
 }
