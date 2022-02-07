@@ -13,7 +13,7 @@ this [blog post](https://cloud.redhat.com/blog/7-best-practices-for-writing-kube
 Install by running:
 
 ```shell
-go install github.com/angelokurtis/reconciler@latest
+go get github.com/angelokurtis/reconciler
 ```
 
 Split the Reconcile responsibilities into handlers with one single purpose and chain them in your controller:
