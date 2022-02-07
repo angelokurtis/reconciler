@@ -1,5 +1,9 @@
 # reconciler
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/angelokurtis/reconciler.svg)](https://pkg.go.dev/github.com/angelokurtis/reconciler)
+[![Build Status](https://github.com/angelokurtis/reconciler/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/angelokurtis/reconciler/actions)
+[![Coverage](https://codecov.io/gh/angelokurtis/reconciler/branch/main/graph/badge.svg)](https://codecov.io/gh/angelokurtis/reconciler)
+
 A library to avoid overstuffed Reconcile functions of Kubernetes operators as suggested in
 this [blog post](https://cloud.redhat.com/blog/7-best-practices-for-writing-kubernetes-operators-an-sre-perspective)
 
