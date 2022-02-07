@@ -19,9 +19,10 @@ go install github.com/angelokurtis/reconciler@latest
 Split the Reconcile responsibilities into handlers with one single purpose and chain them in your controller:
 
 ```go
-import "github.com/angelokurtis/reconciler"
+// package omitted
 
-// code omitted
+import "github.com/angelokurtis/reconciler"
+// other imports
 
 func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	// Fetch the Memcached instance
@@ -39,5 +40,28 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		&memcached.DeploymentCreation{Client: r.Client, Scheme: r.Scheme},
 		&memcached.Status{Client: r.Client},
 	).Reconcile(ctx, m)
+}
+```
+
+Your handler can compose [reconciler.Funcs](https://github.com/angelokurtis/reconciler/blob/main/funcs.go#L27) that
+already implement most of the [interface](https://github.com/angelokurtis/reconciler/blob/main/handler.go#L26) functions
+so you just need to put your logic
+on [Reconcile(context.Context, client.Object)](https://github.com/angelokurtis/reconciler/blob/main/handler.go#L27)
+implementation:
+
+```go
+// package omitted
+
+import "github.com/angelokurtis/reconciler"
+// other imports
+
+type DeploymentCreation struct {
+	reconciler.Funcs
+	// other fields
+}
+
+func (d *DeploymentCreation) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
+	// TODO(user): your logic here
+	return d.Next(ctx, obj)
 }
 ```
