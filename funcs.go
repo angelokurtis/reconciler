@@ -18,36 +18,18 @@ package reconciler
 
 import (
 	"context"
-	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Funcs struct{ next Handler }
+type Funcs struct {
+	Result
+	next Handler
+}
 
 func (f *Funcs) setNext(next Handler) { f.next = next }
 
 func (f *Funcs) Next(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return f.next.Reconcile(ctx, obj)
-}
-
-func (f *Funcs) Finish(ctx context.Context) (ctrl.Result, error) {
-	return ctrl.Result{}, nil
-}
-
-func (f *Funcs) Requeue(ctx context.Context) (ctrl.Result, error) {
-	return ctrl.Result{Requeue: true}, nil
-}
-
-func (f *Funcs) RequeueAfter(ctx context.Context, duration time.Duration) (ctrl.Result, error) {
-	return ctrl.Result{RequeueAfter: duration}, nil
-}
-
-func (f *Funcs) RequeueOnErr(ctx context.Context, err error) (ctrl.Result, error) {
-	return ctrl.Result{}, err
-}
-
-func (f *Funcs) RequeueOnErrAfter(ctx context.Context, err error, duration time.Duration) (ctrl.Result, error) {
-	return ctrl.Result{RequeueAfter: duration}, err
 }
