@@ -22,26 +22,27 @@ import (
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	"github.com/angelokurtis/reconciler/internal/trace"
 )
 
 type tracer struct{ Funcs }
 
 func (t *tracer) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
-	l := log.FromContext(ctx)
-	l.Info("Reconciler has been triggered")
+	log := trace.LogFromContext(ctx)
+	log.Info("Reconciler has been triggered")
 	result, err := t.next.Reconcile(ctx, obj)
 	switch {
 	case err != nil:
-		l.Error(err, "Reconciler error")
+		log.Error(err, "Reconciler error")
 		return result, err
 	case result.RequeueAfter > 0:
-		l.Info("Successfully reconciled!", "requeue", fmt.Sprintf("in %s", result.RequeueAfter))
+		log.Info("Successfully reconciled!", "requeue", fmt.Sprintf("in %s", result.RequeueAfter))
 		return result, nil
 	case result.Requeue:
-		l.Info("Successfully reconciled!", "requeue", "now")
+		log.Info("Successfully reconciled!", "requeue", "now")
 		return result, nil
 	}
-	l.Info("Successfully reconciled!")
+	log.Info("Successfully reconciled!")
 	return result, nil
 }
