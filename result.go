@@ -21,6 +21,8 @@ import (
 	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
+
+	"github.com/angelokurtis/reconciler/internal/trace"
 )
 
 type Result struct{}
@@ -38,9 +40,11 @@ func (r *Result) RequeueAfter(ctx context.Context, duration time.Duration) (ctrl
 }
 
 func (r *Result) RequeueOnErr(ctx context.Context, err error) (ctrl.Result, error) {
-	return ctrl.Result{}, err
+	span := trace.SpanFromContext(ctx)
+	return ctrl.Result{}, span.Error(err)
 }
 
 func (r *Result) RequeueOnErrAfter(ctx context.Context, err error, duration time.Duration) (ctrl.Result, error) {
-	return ctrl.Result{RequeueAfter: duration}, err
+	span := trace.SpanFromContext(ctx)
+	return ctrl.Result{RequeueAfter: duration}, span.Error(err)
 }

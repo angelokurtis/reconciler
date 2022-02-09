@@ -23,6 +23,8 @@ import (
 	"testing"
 	"time"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logr "sigs.k8s.io/controller-runtime/pkg/log"
@@ -72,6 +74,16 @@ func TestOperations(t *testing.T) {
 			t.Errorf("expect empty result, got result=%+v err=%+v", result, err)
 		}
 	})
+	t.Run("should throw error and requeue in 5m when an operation fails with this result", func(t *testing.T) {
+		r := reconciler.Chain(
+			&withoutError{},
+			&withRequeueError{},
+		)
+		result, err := r.Reconcile(context.TODO(), nil)
+		if err == nil || result.RequeueAfter != 5*time.Minute {
+			t.Errorf("expect error and requeue in 5min, got result=%+v err=%+v", result, err)
+		}
+	})
 }
 
 type withoutError struct{ reconciler.Funcs }
@@ -97,4 +109,11 @@ type withRequeueIn2min struct{ reconciler.Funcs }
 
 func (w *withRequeueIn2min) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return w.RequeueAfter(ctx, 2*time.Minute)
+}
+
+type withRequeueError struct{ reconciler.Funcs }
+
+func (w *withRequeueError) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
+	err := apierrors.NewAlreadyExists(schema.GroupResource{Resource: "foos"}, "bar")
+	return w.RequeueOnErrAfter(ctx, err, 5*time.Minute)
 }
