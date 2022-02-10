@@ -20,16 +20,15 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/angelokurtis/reconciler/internal/trace"
 )
 
 type tracer struct{ Funcs }
 
 func (t *tracer) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
-	log := trace.LogFromContext(ctx)
+	log := logr.FromContextOrDiscard(ctx)
 	log.Info("Reconciler has been triggered")
 	result, err := t.next.Reconcile(ctx, obj)
 	switch {

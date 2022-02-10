@@ -3,9 +3,7 @@ package trace
 import (
 	"context"
 	"errors"
-	"fmt"
 
-	"github.com/go-logr/logr"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -30,14 +28,4 @@ func (s *Span) Error(err error) error {
 		}
 	}
 	return err
-}
-
-func (s *Span) Log(log logr.Logger) logr.Logger {
-	if ctx := s.SpanContext(); ctx.IsValid() {
-		traceID := ctx.TraceID()
-		spanID := ctx.SpanID()
-		sampled := ctx.IsSampled()
-		return log.WithValues("trace", fmt.Sprintf("%s:%s:%t", traceID, spanID, sampled))
-	}
-	return log
 }
