@@ -24,7 +24,7 @@ import (
 )
 
 type Funcs struct {
-	Result
+	Results
 	next Handler
 }
 

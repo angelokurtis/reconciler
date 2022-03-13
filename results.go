@@ -25,26 +25,26 @@ import (
 	"github.com/angelokurtis/reconciler/internal/trace"
 )
 
-type Result struct{}
+type Results struct{}
 
-func (r *Result) Finish(ctx context.Context) (ctrl.Result, error) {
+func (r *Results) Finish(ctx context.Context) (ctrl.Result, error) {
 	return ctrl.Result{}, nil
 }
 
-func (r *Result) Requeue(ctx context.Context) (ctrl.Result, error) {
+func (r *Results) Requeue(ctx context.Context) (ctrl.Result, error) {
 	return ctrl.Result{Requeue: true}, nil
 }
 
-func (r *Result) RequeueAfter(ctx context.Context, duration time.Duration) (ctrl.Result, error) {
+func (r *Results) RequeueAfter(ctx context.Context, duration time.Duration) (ctrl.Result, error) {
 	return ctrl.Result{RequeueAfter: duration}, nil
 }
 
-func (r *Result) RequeueOnErr(ctx context.Context, err error) (ctrl.Result, error) {
+func (r *Results) RequeueOnErr(ctx context.Context, err error) (ctrl.Result, error) {
 	span := trace.SpanFromContext(ctx)
 	return ctrl.Result{}, span.Error(err)
 }
 
-func (r *Result) RequeueOnErrAfter(ctx context.Context, err error, duration time.Duration) (ctrl.Result, error) {
+func (r *Results) RequeueOnErrAfter(ctx context.Context, err error, duration time.Duration) (ctrl.Result, error) {
 	span := trace.SpanFromContext(ctx)
 	return ctrl.Result{RequeueAfter: duration}, span.Error(err)
 }
