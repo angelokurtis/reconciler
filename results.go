@@ -1,18 +1,16 @@
-/*
-Copyright 2022.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// Copyright 2022
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package reconciler
 
@@ -21,8 +19,6 @@ import (
 	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
-
-	"github.com/angelokurtis/reconciler/internal/trace"
 )
 
 type Results struct{}
@@ -40,11 +36,11 @@ func (r *Results) RequeueAfter(ctx context.Context, duration time.Duration) (ctr
 }
 
 func (r *Results) RequeueOnErr(ctx context.Context, err error) (ctrl.Result, error) {
-	span := trace.SpanFromContext(ctx)
-	return ctrl.Result{}, span.Error(err)
+	s := spanFromContext(ctx)
+	return ctrl.Result{}, s.Error(err)
 }
 
 func (r *Results) RequeueOnErrAfter(ctx context.Context, err error, duration time.Duration) (ctrl.Result, error) {
-	span := trace.SpanFromContext(ctx)
-	return ctrl.Result{RequeueAfter: duration}, span.Error(err)
+	s := spanFromContext(ctx)
+	return ctrl.Result{RequeueAfter: duration}, s.Error(err)
 }
