@@ -26,15 +26,3 @@ type Handler interface {
 	Next(ctx context.Context, obj client.Object) (ctrl.Result, error)
 	setNext(next Handler)
 }
-
-func Chain(handlers ...Handler) Handler {
-	handlers = append(handlers, &finisher{})
-	handlers = append([]Handler{&tracer{}}, handlers...)
-	var last Handler
-	for i := len(handlers) - 1; i >= 0; i-- {
-		current := handlers[i]
-		current.setNext(last)
-		last = current
-	}
-	return last
-}
