@@ -18,33 +18,48 @@ package reconciler
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
-
-	"github.com/angelokurtis/reconciler/internal/trace"
 )
+
+const resultCallDepth = 2
 
 type Result struct{}
 
 func (r *Result) Finish(ctx context.Context) (ctrl.Result, error) {
+	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
+	log.Info("Reconciliation finished successfully")
+
 	return ctrl.Result{}, nil
 }
 
 func (r *Result) Requeue(ctx context.Context) (ctrl.Result, error) {
+	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
+	log.Info("Reconciliation requeued", "requeue", "now")
+
 	return ctrl.Result{Requeue: true}, nil
 }
 
 func (r *Result) RequeueAfter(ctx context.Context, duration time.Duration) (ctrl.Result, error) {
+	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
+	log.Info("Reconciliation requeued", "requeue", fmt.Sprintf("in %s", duration))
+
 	return ctrl.Result{RequeueAfter: duration}, nil
 }
 
 func (r *Result) RequeueOnErr(ctx context.Context, err error) (ctrl.Result, error) {
-	span := trace.SpanFromContext(ctx)
-	return ctrl.Result{}, span.Error(err)
+	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
+	log.Info("Reconciliation requeued due to error", "requeue", "now")
+
+	return ctrl.Result{}, err
 }
 
 func (r *Result) RequeueOnErrAfter(ctx context.Context, err error, duration time.Duration) (ctrl.Result, error) {
-	span := trace.SpanFromContext(ctx)
-	return ctrl.Result{RequeueAfter: duration}, span.Error(err)
+	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
+	log.Info("Reconciliation requeued due to error", "requeue", fmt.Sprintf("in %s", duration))
+
+	return ctrl.Result{RequeueAfter: duration}, err
 }

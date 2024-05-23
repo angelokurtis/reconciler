@@ -19,6 +19,7 @@ package reconciler
 import (
 	"context"
 
+	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -31,5 +32,8 @@ type Funcs struct {
 func (f *Funcs) setNext(next Handler) { f.next = next }
 
 func (f *Funcs) Next(ctx context.Context, obj client.Object) (ctrl.Result, error) {
+	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
+	log.Info("Passing control to the next handler")
+
 	return f.next.Reconcile(ctx, obj)
 }

@@ -39,6 +39,7 @@ func TestOperations(t *testing.T) {
 			&withError{},
 			&withRequeueIn2min{},
 		)
+
 		_, err := r.Reconcile(context.TODO(), nil)
 		if err == nil {
 			t.Errorf("expect error, got %+v", err)
@@ -49,6 +50,7 @@ func TestOperations(t *testing.T) {
 			&withRequeueIn2min{},
 			&withoutError{},
 		)
+
 		result, err := r.Reconcile(context.TODO(), nil)
 		if err != nil || result.RequeueAfter != 2*time.Minute {
 			t.Errorf("expect requeue in 2min, got result=%+v err=%+v", result, err)
@@ -59,6 +61,7 @@ func TestOperations(t *testing.T) {
 			&withRequeue{},
 			&withoutError{},
 		)
+
 		result, err := r.Reconcile(context.TODO(), nil)
 		if err != nil || !result.Requeue {
 			t.Errorf("expect requeue true, got result=%+v err=%+v", result, err)
@@ -69,6 +72,7 @@ func TestOperations(t *testing.T) {
 			&withoutError{},
 			&withoutError{},
 		)
+
 		result, err := r.Reconcile(context.TODO(), nil)
 		if err != nil || result.Requeue || result.RequeueAfter > 0 {
 			t.Errorf("expect empty result, got result=%+v err=%+v", result, err)
@@ -79,6 +83,7 @@ func TestOperations(t *testing.T) {
 			&withoutError{},
 			&withRequeueError{},
 		)
+
 		result, err := r.Reconcile(context.TODO(), nil)
 		if err == nil || result.RequeueAfter != 5*time.Minute {
 			t.Errorf("expect error and requeue in 5min, got result=%+v err=%+v", result, err)
