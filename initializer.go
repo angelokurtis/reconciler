@@ -24,11 +24,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type initializer struct{ Funcs }
+type initializer[T client.Object] struct{ Funcs[T] }
 
-func (t *initializer) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
+func (t *initializer[T]) Reconcile(ctx context.Context, resource T) (ctrl.Result, error) {
 	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
 	log.Info("Reconciler has been triggered")
 
-	return t.next.Reconcile(ctx, obj)
+	return t.next.Reconcile(ctx, resource)
 }

@@ -7,6 +7,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Interface interface {
-	Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error)
+type Interface[T client.Object] interface {
+	Reconcile(ctx context.Context, resource T) (ctrl.Result, error)
 }

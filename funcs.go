@@ -24,16 +24,16 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Funcs struct {
+type Funcs[T client.Object] struct {
 	Result
-	next Handler
+	next Handler[T]
 }
 
-func (f *Funcs) setNext(next Handler) { f.next = next }
+func (f *Funcs[T]) setNext(next Handler[T]) { f.next = next }
 
-func (f *Funcs) Next(ctx context.Context, obj client.Object) (ctrl.Result, error) {
+func (f *Funcs[T]) Next(ctx context.Context, resource T) (ctrl.Result, error) {
 	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
 	log.Info("Passing control to the next handler")
 
-	return f.next.Reconcile(ctx, obj)
+	return f.next.Reconcile(ctx, resource)
 }

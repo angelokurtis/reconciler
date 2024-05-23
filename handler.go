@@ -23,17 +23,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Handler interface {
-	Interface
-	Next(ctx context.Context, obj client.Object) (ctrl.Result, error)
-	setNext(next Handler)
+type Handler[T client.Object] interface {
+	Interface[T]
+	Next(ctx context.Context, resource T) (ctrl.Result, error)
+	setNext(next Handler[T])
 }
 
-func Chain(handlers ...Handler) Handler {
-	handlers = append(handlers, &finisher{})
-	handlers = append([]Handler{&initializer{}}, handlers...)
+func Chain[T client.Object](handlers ...Handler[T]) Handler[T] {
+	handlers = append(handlers, &finisher[T]{})
+	handlers = append([]Handler[T]{&initializer[T]{}}, handlers...)
 
-	var last Handler
+	var last Handler[T]
 
 	for i := len(handlers) - 1; i >= 0; i-- {
 		current := handlers[i]

@@ -34,7 +34,7 @@ import (
 
 func TestOperations(t *testing.T) {
 	t.Run("should throw error when an operation fails", func(t *testing.T) {
-		r := reconciler.Chain(
+		r := reconciler.Chain[client.Object](
 			&withoutError{},
 			&withError{},
 			&withRequeueIn2min{},
@@ -46,7 +46,7 @@ func TestOperations(t *testing.T) {
 		}
 	})
 	t.Run("should requeue in 2m when an operation have this result", func(t *testing.T) {
-		r := reconciler.Chain(
+		r := reconciler.Chain[client.Object](
 			&withRequeueIn2min{},
 			&withoutError{},
 		)
@@ -57,7 +57,7 @@ func TestOperations(t *testing.T) {
 		}
 	})
 	t.Run("should requeue now when an operation have this result", func(t *testing.T) {
-		r := reconciler.Chain(
+		r := reconciler.Chain[client.Object](
 			&withRequeue{},
 			&withoutError{},
 		)
@@ -68,7 +68,7 @@ func TestOperations(t *testing.T) {
 		}
 	})
 	t.Run("should finish all operations when none requeue or fail", func(t *testing.T) {
-		r := reconciler.Chain(
+		r := reconciler.Chain[client.Object](
 			&withoutError{},
 			&withoutError{},
 		)
@@ -79,7 +79,7 @@ func TestOperations(t *testing.T) {
 		}
 	})
 	t.Run("should throw error and requeue in 5m when an operation fails with this result", func(t *testing.T) {
-		r := reconciler.Chain(
+		r := reconciler.Chain[client.Object](
 			&withoutError{},
 			&withRequeueError{},
 		)
@@ -91,32 +91,42 @@ func TestOperations(t *testing.T) {
 	})
 }
 
-type withoutError struct{ reconciler.Funcs }
+type withoutError struct {
+	reconciler.Funcs[client.Object]
+}
 
 func (w *withoutError) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	logr.FromContext(ctx).V(0).Info(fmt.Sprintf("%T", w))
 	return w.Next(ctx, obj)
 }
 
-type withError struct{ reconciler.Funcs }
+type withError struct {
+	reconciler.Funcs[client.Object]
+}
 
 func (w *withError) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return w.RequeueOnErr(ctx, errors.New("reconcile with error"))
 }
 
-type withRequeue struct{ reconciler.Funcs }
+type withRequeue struct {
+	reconciler.Funcs[client.Object]
+}
 
 func (w *withRequeue) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return w.Requeue(ctx)
 }
 
-type withRequeueIn2min struct{ reconciler.Funcs }
+type withRequeueIn2min struct {
+	reconciler.Funcs[client.Object]
+}
 
 func (w *withRequeueIn2min) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	return w.RequeueAfter(ctx, 2*time.Minute)
 }
 
-type withRequeueError struct{ reconciler.Funcs }
+type withRequeueError struct {
+	reconciler.Funcs[client.Object]
+}
 
 func (w *withRequeueError) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
 	err := apierrors.NewAlreadyExists(schema.GroupResource{Resource: "foos"}, "bar")
