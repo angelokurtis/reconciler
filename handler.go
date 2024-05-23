@@ -24,7 +24,7 @@ import (
 )
 
 type Handler interface {
-	Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error)
+	Interface
 	Next(ctx context.Context, obj client.Object) (ctrl.Result, error)
 	setNext(next Handler)
 }
