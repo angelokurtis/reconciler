@@ -17,3 +17,5 @@ vendor/
 # Ignore IDE settings
 .idea/
 .vscode/
+
+scripts/
