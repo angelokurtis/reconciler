@@ -30,5 +30,5 @@ func (t *initializer[T]) Reconcile(ctx context.Context, resource T) (ctrl.Result
 	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
 	log.Info("Reconciler has been triggered")
 
-	return t.next.Reconcile(ctx, resource)
+	return t.Next(ctx, resource)
 }

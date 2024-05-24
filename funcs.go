@@ -18,6 +18,7 @@ package reconciler
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -33,7 +34,7 @@ func (f *Funcs[T]) setNext(next Handler[T]) { f.next = next }
 
 func (f *Funcs[T]) Next(ctx context.Context, resource T) (ctrl.Result, error) {
 	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.Info("Passing control to the next handler")
+	log.Info("Passing control to the next handler", "nextHandler", fmt.Sprintf("%T", f.next))
 
 	return f.next.Reconcile(ctx, resource)
 }
