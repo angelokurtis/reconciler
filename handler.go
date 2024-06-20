@@ -21,10 +21,11 @@ import (
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 type Handler[T client.Object] interface {
-	Interface[T]
+	reconcile.ObjectReconciler[T]
 	Next(ctx context.Context, resource T) (ctrl.Result, error)
 	setNext(next Handler[T])
 }
