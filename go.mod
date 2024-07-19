@@ -1,4 +1,4 @@
-module github.com/angelokurtis/reconciler
+module github.com/angelokurtis/reconciler/v2
 
 go 1.22.5
 
