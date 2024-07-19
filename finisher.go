@@ -23,8 +23,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type finisher struct{ Funcs }
+type finisher[T client.Object] struct{ Funcs[T] }
 
-func (f *finisher) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
+func (f *finisher[T]) Reconcile(ctx context.Context, _ T) (ctrl.Result, error) {
 	return f.Finish(ctx)
 }

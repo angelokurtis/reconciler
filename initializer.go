@@ -18,30 +18,17 @@ package reconciler
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type tracer struct{ Funcs }
+type initializer[T client.Object] struct{ Funcs[T] }
 
-func (t *tracer) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx)
+func (t *initializer[T]) Reconcile(ctx context.Context, resource T) (ctrl.Result, error) {
+	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
 	log.Info("Reconciler has been triggered")
-	result, err := t.next.Reconcile(ctx, obj)
-	switch {
-	case err != nil:
-		log.Error(err, "Reconciler error")
-		return result, err
-	case result.RequeueAfter > 0:
-		log.Info("Successfully reconciled!", "requeue", fmt.Sprintf("in %s", result.RequeueAfter))
-		return result, nil
-	case result.Requeue:
-		log.Info("Successfully reconciled!", "requeue", "now")
-		return result, nil
-	}
-	log.Info("Successfully reconciled!")
-	return result, nil
+
+	return t.Next(ctx, resource)
 }
