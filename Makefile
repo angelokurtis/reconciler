@@ -32,8 +32,8 @@ auto-release: svu ## Automate release tasks based on git log.
 	fi; \
 	current_branch=$$(git rev-parse --abbrev-ref HEAD); \
 	remote_branch=$$(git for-each-ref --format='%(upstream:short)' refs/heads/"$$current_branch"); \
-	if [ "$$remote_branch" != "origin/main" ]; then \
-		echo "Error: You are not in the main branch."; \
+	if [ "$$remote_branch" != "origin/v2" ]; then \
+		echo "Error: You are not in the v2 branch."; \
 		exit 1; \
 	fi; \
 	next_version=$$($(SVU) next); \
@@ -45,8 +45,8 @@ auto-release: svu ## Automate release tasks based on git log.
 major-release: svu ## Force a major release with significant changes.
 	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
 	remote_branch=$$(git for-each-ref --format='%(upstream:short)' refs/heads/"$$current_branch"); \
-	if [ "$$remote_branch" != "origin/main" ]; then \
-		echo "Error: You are not in the main branch."; \
+	if [ "$$remote_branch" != "origin/v2" ]; then \
+		echo "Error: You are not in the v2 branch."; \
 		exit 1; \
 	fi; \
 	next_version=$$($(SVU) major); \
@@ -58,8 +58,8 @@ major-release: svu ## Force a major release with significant changes.
 minor-release: svu ## Force a minor release with new features.
 	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
 	remote_branch=$$(git for-each-ref --format='%(upstream:short)' refs/heads/"$$current_branch"); \
-	if [ "$$remote_branch" != "origin/main" ]; then \
-		echo "Error: You are not in the main branch."; \
+	if [ "$$remote_branch" != "origin/v2" ]; then \
+		echo "Error: You are not in the v2 branch."; \
 		exit 1; \
 	fi; \
 	next_version=$$($(SVU) minor); \
@@ -71,8 +71,8 @@ minor-release: svu ## Force a minor release with new features.
 patch-release: svu ## Force a patch release with bug fixes.
 	@current_branch=$$(git rev-parse --abbrev-ref HEAD); \
 	remote_branch=$$(git for-each-ref --format='%(upstream:short)' refs/heads/"$$current_branch"); \
-	if [ "$$remote_branch" != "origin/main" ]; then \
-		echo "Error: You are not in the main branch."; \
+	if [ "$$remote_branch" != "origin/v2" ]; then \
+		echo "Error: You are not in the v2 branch."; \
 		exit 1; \
 	fi; \
 	next_version=$$($(SVU) patch); \
