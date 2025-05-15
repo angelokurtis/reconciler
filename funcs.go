@@ -22,10 +22,9 @@ import (
 
 	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Funcs[T client.Object] struct {
+type Funcs[T any] struct {
 	Result
 	next Handler[T]
 }
