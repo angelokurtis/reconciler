@@ -20,8 +20,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 type Funcs[T any] struct {
@@ -32,8 +32,8 @@ type Funcs[T any] struct {
 func (f *Funcs[T]) setNext(next Handler[T]) { f.next = next }
 
 func (f *Funcs[T]) Next(ctx context.Context, resource T) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.V(1).Info("Passing control to the next handler", "nextHandler", fmt.Sprintf("%T", f.next))
+	l := log.FromContext(ctx).WithCallDepth(callDepth)
+	l.V(1).Info("Delegating to next handler", "nextHandler", fmt.Sprintf("%T", f.next))
 
 	return f.next.Reconcile(ctx, resource)
 }

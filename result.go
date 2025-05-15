@@ -18,48 +18,47 @@ package reconciler
 
 import (
 	"context"
-	"fmt"
 	"time"
 
-	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
+	log "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-const resultCallDepth = 2
+const callDepth = 2
 
 type Result struct{}
 
 func (r *Result) Finish(ctx context.Context) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.Info("Reconciliation finished successfully")
+	l := log.FromContext(ctx).WithCallDepth(callDepth)
+	l.Info("Reconciliation finished early")
 
 	return ctrl.Result{}, nil
 }
 
 func (r *Result) Requeue(ctx context.Context) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.Info("Reconciliation requeued", "requeue", "now")
+	l := log.FromContext(ctx).WithCallDepth(callDepth)
+	l.Info("Reconciliation requeued to run immediately")
 
 	return ctrl.Result{Requeue: true}, nil
 }
 
 func (r *Result) RequeueAfter(ctx context.Context, duration time.Duration) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.Info("Reconciliation requeued", "requeue", fmt.Sprintf("in %s", duration))
+	l := log.FromContext(ctx).WithCallDepth(callDepth)
+	l.Info("Reconciliation requeued to run after delay", "delay", duration)
 
 	return ctrl.Result{RequeueAfter: duration}, nil
 }
 
 func (r *Result) RequeueOnErr(ctx context.Context, err error) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.Info("Reconciliation requeued due to error", "requeue", "now")
+	l := log.FromContext(ctx).WithCallDepth(callDepth)
+	l.Info("Reconciliation requeued due to error")
 
 	return ctrl.Result{}, err
 }
 
 func (r *Result) RequeueOnErrAfter(ctx context.Context, err error, duration time.Duration) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.Info("Reconciliation requeued due to error", "requeue", fmt.Sprintf("in %s", duration))
+	l := log.FromContext(ctx).WithCallDepth(callDepth)
+	l.Info("Reconciliation requeued after delay due to error", "delay", duration)
 
 	return ctrl.Result{RequeueAfter: duration}, err
 }

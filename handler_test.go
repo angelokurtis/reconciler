@@ -27,7 +27,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	logr "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	reconciler "github.com/angelokurtis/reconciler/v2"
 )
@@ -96,7 +96,7 @@ type withoutError struct {
 }
 
 func (w *withoutError) Reconcile(ctx context.Context, obj client.Object) (ctrl.Result, error) {
-	logr.FromContext(ctx).V(0).Info(fmt.Sprintf("%T", w))
+	log.FromContext(ctx).V(0).Info(fmt.Sprintf("%T", w))
 	return w.Next(ctx, obj)
 }
 
