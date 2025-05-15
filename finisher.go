@@ -20,10 +20,9 @@ import (
 	"context"
 
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type finisher[T client.Object] struct{ Funcs[T] }
+type finisher[T any] struct{ Funcs[T] }
 
 func (f *finisher[T]) Reconcile(ctx context.Context, _ T) (ctrl.Result, error) {
 	return f.Finish(ctx)

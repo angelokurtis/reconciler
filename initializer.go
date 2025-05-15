@@ -21,10 +21,9 @@ import (
 
 	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type initializer[T client.Object] struct{ Funcs[T] }
+type initializer[T any] struct{ Funcs[T] }
 
 func (t *initializer[T]) Reconcile(ctx context.Context, resource T) (ctrl.Result, error) {
 	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)

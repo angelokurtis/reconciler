@@ -20,17 +20,15 @@ import (
 	"context"
 
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-type Handler[T client.Object] interface {
-	reconcile.ObjectReconciler[T]
+type Handler[T any] interface {
+	Reconcile(context.Context, T) (ctrl.Result, error)
 	Next(ctx context.Context, resource T) (ctrl.Result, error)
 	setNext(next Handler[T])
 }
 
-func Chain[T client.Object](handlers ...Handler[T]) Handler[T] {
+func Chain[T any](handlers ...Handler[T]) Handler[T] {
 	handlers = append(handlers, &finisher[T]{})
 	handlers = append([]Handler[T]{&initializer[T]{}}, handlers...)
 
