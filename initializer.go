@@ -19,15 +19,15 @@ package reconciler
 import (
 	"context"
 
-	"github.com/go-logr/logr"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 type initializer[T any] struct{ Funcs[T] }
 
 func (t *initializer[T]) Reconcile(ctx context.Context, resource T) (ctrl.Result, error) {
-	log := logr.FromContextOrDiscard(ctx).WithCallDepth(resultCallDepth)
-	log.Info("Reconciler has been triggered")
+	l := log.FromContext(ctx).WithCallDepth(callDepth)
+	l.Info("Reconciler has been triggered")
 
 	return t.Next(ctx, resource)
 }
